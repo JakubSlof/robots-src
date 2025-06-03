@@ -18,7 +18,7 @@ struct Grabber
     // nastavy grabber na close pozici
     void Close()
     {
-        servoBus.set(0, 220_deg);
-        servoBus.set(1, 20_deg);
+        servoBus.set(0, 222_deg);
+        servoBus.set(1, 27_deg);
     }
 };
