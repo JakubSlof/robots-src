@@ -6,6 +6,7 @@ auto &man = rb::Manager::get(); // pro fungovani RBCX
 #include "Grabber.hpp"
 #include "Comunication.hpp"
 #include "Movement.hpp"
+#include "Sensors.hpp"
 
 Grabber grab;
 Movement move;
@@ -39,7 +40,7 @@ void setup()
     //WaitForStart();
     //man.leds().red(true);
     // move.Straight(1000, 1000, 1000);
-    // move.BackwardUntillWall();
+     move.BackwardUntillWall();
     //grab.Close();
     //delay(2000);
     //grab.Open();
