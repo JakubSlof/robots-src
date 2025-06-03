@@ -69,10 +69,6 @@ void setup()
     servoBus.setAutoStop(0, false); // vypne autostop leveho serva
     servoBus.setAutoStop(1, false); // vypne autostop praveho serva
 
-    sens.InitLEDs();
-    sens.LEDsSetColor(CRGB::Red);
-    man.leds().red(true);
-
     // while (true)
     // {
     //     Serial.printf(" US_Right %i \n", sens.GetUS(sens.RIGHT));
