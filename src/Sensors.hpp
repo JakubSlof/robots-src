@@ -5,8 +5,8 @@
 
 struct Sensors{
 
-    #define LED_PIN     3
-    #define NUM_LEDS    8
+    #define LED_PIN     25
+    #define NUM_LEDS    9
 
     CRGB leds[NUM_LEDS]; 
 
@@ -140,9 +140,10 @@ struct Sensors{
     }
 
     void LEDsSetColor(CRGB color) {
-        for (int i = 0; i < NUM_LEDS; i++) {
-            leds[i] = color;
-        }
+        // for (int i = 0; i < NUM_LEDS; i++) {
+        //     leds[i] = color;
+        // }
+        leds[0] = color; 
         FastLED.show();
     }
 };
