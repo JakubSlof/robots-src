@@ -11,6 +11,7 @@ auto &man = rb::Manager::get(); // pro fungovani RBCX
 Grabber grab;
 Movement move;
 Communication comm;
+Sensors sens;
 
 void WaitForStart()
 {
@@ -34,6 +35,18 @@ void setup()
     servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
     servoBus.setAutoStop(0, false); // vypne autostop leveho serva
     servoBus.setAutoStop(1, false); // vypne autostop praveho serva
+
+    sens.InitRGB(); // inicializace
+    sens.LEDsSetColor(CRGB::White); // nastav LED na cernou
+    
+    while (true)
+    {
+        Serial.printf(" US_Right %i \n", sens.GetUS(sens.RIGHT));
+        Serial.printf(" US_Left %i \n", sens.GetUS(sens.LEFT));
+        Serial.printf(" US_Back %i \n", sens.GetUS(sens.BACK));
+        delay(1000);
+    }
+    
     
     comm.WaitForData(); // cekani na zpravu z Raspberry
 

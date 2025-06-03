@@ -1,8 +1,14 @@
 #include "RBCX.h"
 #include <Arduino.h>
 #include "Adafruit_TCS34725.h"
+#include <FastLED.h>
 
 struct Sensors{
+
+    #define LED_PIN     3
+    #define NUM_LEDS    8
+
+    CRGB leds[NUM_LEDS]; 
 
     static const uint8_t RGB_SDA_front_pin = 21;
     static const uint8_t RGB_SCL_front_pin = 22;
@@ -107,7 +113,36 @@ struct Sensors{
         }
     }
 
-    int GetUS(uint8_t ultrasound_Id){
-        return man.ultrasound(ultrasound_Id).measure();
+    typedef enum {
+        BACK,
+        RIGHT,
+        LEFT,
+    } USid;
+
+    int GetUS(USid ultrasound_Id) {
+        auto &man = rb::Manager::get(); // get manager instance as singleton
+        if (ultrasound_Id == BACK) {
+            return man.ultrasound(0).measure();
+        }
+        else if (ultrasound_Id == RIGHT) {
+            return man.ultrasound(1).measure();
+        }
+        else{
+            return man.ultrasound(2).measure();
+        }
+    }
+
+    void InitLEDs() {
+        FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
+        FastLED.setBrightness(50); // Nastaveni jasu LED
+        FastLED.clear(); // Vymazani LED
+        FastLED.show(); // Aktualizace LED
+    }
+
+    void LEDsSetColor(CRGB color) {
+        for (int i = 0; i < NUM_LEDS; i++) {
+            leds[i] = color;
+        }
+        FastLED.show();
     }
 };
