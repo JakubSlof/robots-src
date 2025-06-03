@@ -40,7 +40,7 @@ void setup()
     //WaitForStart();
     //man.leds().red(true);
     // move.Straight(1000, 1000, 1000);
-     move.BackwardUntillWall();
+    // move.BackwardUntillWall();
     //grab.Close();
     //delay(2000);
     //grab.Open();

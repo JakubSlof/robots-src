@@ -106,4 +106,8 @@ struct Sensors{
             return COLOR_RED; // Default case
         }
     }
+
+    int GetUS(uint8_t ultrasound_Id){
+        return man.ultrasound(ultrasound_Id).measure();
+    }
 };
