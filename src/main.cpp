@@ -24,6 +24,35 @@ void WaitForStart()
     }
 }
 
+void CheckBattery()
+{
+    const auto &bat = man.battery();
+    static const uint32_t VOLTAGE_MAX = 7500; //%edit
+    static const uint32_t VOLTAGE_MIN = 6600; //%edit
+    int i = 0;
+    int voltage = 0;
+    for (i = 0; i < 2; ++i)
+    {
+        voltage = bat.voltageMv();
+        // Vypočítej procenta (omez na 0-100)
+        int pct = (voltage - VOLTAGE_MIN) * 100 / (VOLTAGE_MAX - VOLTAGE_MIN);
+        if (pct > 100)
+            pct = 100;
+        if (pct < 0)
+            pct = 0;
+
+        if (i > 0)
+        {
+            printf("Battery at %d%%, %dmv\n", i, pct, voltage);
+            if (voltage < VOLTAGE_MIN)
+            {
+                printf("Je třeba nabít baterii!\n");
+            }
+        }
+        delay(1000);
+    }
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -34,17 +63,18 @@ void setup()
     servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
     servoBus.setAutoStop(0, false); // vypne autostop leveho serva
     servoBus.setAutoStop(1, false); // vypne autostop praveho serva
-    
-    comm.WaitForData(); // cekani na zpravu z Raspberry
 
-    //WaitForStart();
-    //man.leds().red(true);
-    // move.Straight(1000, 1000, 1000);
-    // move.BackwardUntillWall();
-    //grab.Close();
-    //delay(2000);
-    //grab.Open();
-    //delay(2000);
-    //grab.Close();
+    // comm.WaitForData(); // cekani na zpravu z Raspberry
+    CheckBattery();
+
+    WaitForStart();
+    man.leds().red(true);
+    //  move.Straight(1000, 1000, 1000);
+    //  move.BackwardUntillWall();
+    grab.Close();
+    delay(2000);
+    grab.Open();
+    delay(2000);
+    grab.Close();
 }
 void loop() {}

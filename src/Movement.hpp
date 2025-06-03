@@ -177,7 +177,7 @@ struct Movement
       man.motor(motorR).speed(-2500);
 
       distance = averageDistance();
-      printf("Distance: %4d mm (%3d cm)\n", distance, distance / 10);
+      // printf("Distance: %4d mm (%3d cm)\n", distance, distance / 10);
     }
     delay(2000);
 
