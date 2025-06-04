@@ -3,51 +3,35 @@
 #include <Arduino.h>
 struct Communication
 {
-  int x_distance = 0;
-  int y_distance = 0;
+int angle_deg;
+int distance_px;
 
-  // ceka nez dojde zprava z Raspberry Pi ze je pripraveno
-  void WaitForReadyMessage()
-  {
-    while (true)
-    {
-      if (Serial.available() > 0)
-      {
-        String data = Serial.readStringUntil('\n');
-        if (data == "ready")
-        {
-          man.leds().green(true);
-          break;
-        }
-      }
-      delay(10);
-    }
-  }
-
-  // posle zpravu do Raspberry Pi ze je na pozici pro vyfoceni fotky
-  void SendInPosstionMessage()
-  {
-    Serial.println("inposition");
-  }
-
-  void WaitForData()
+  void WaitForAngleData()
   {
     while (true)
     {
       if (Serial.available() > 0)
       {
         man.leds().red(true);
-        int num = 0;
         String data = Serial.readStringUntil('\n');
         const char *daata = data.c_str();
-        num = std::atoi(daata);
+        int num = std::atoi(daata);
+        angle_deg = num;
+        break;
+      }
+    }
+  }
 
-        if (num != 0)
-        {
-          man.leds().yellow(true);
-          delay(50000);
-        }
-        delay(10);
+  void WaitForDistanceData()
+  {
+    while (true)
+    {
+      if (Serial.available() > 0)
+      {
+        String data = Serial.readStringUntil('\n');
+        const char *daata = data.c_str();
+        int num = std::atoi(daata);
+        distance_px = num;
         break;
       }
     }
