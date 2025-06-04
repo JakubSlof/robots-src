@@ -3,8 +3,8 @@
 #include <Arduino.h>
 struct Communication
 {
-int angle_deg;
-int distance_px;
+  int angle_deg;
+  int distance_px;
 
   void WaitForAngleData()
   {
@@ -34,6 +34,7 @@ int distance_px;
         distance_px = num;
         break;
       }
+      delay(10);
     }
   }
 };

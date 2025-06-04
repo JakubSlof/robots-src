@@ -1,7 +1,7 @@
 #include "SmartServoBus.hpp"
 #include "RBCX.h"
 #include <Arduino.h>
-#include <thread>
+//#include <thread>
 auto &man = rb::Manager::get(); // pro fungovani RBCX
 #include "Grabber.hpp"
 #include "Comunication.hpp"
@@ -44,7 +44,7 @@ void CheckBattery()
 
         if (i > 0)
         {
-            printf("Battery at %d%%, %dmv\n", i, pct, voltage);
+            printf("Battery at %d%%, %dmv\n", pct, voltage);
             if (voltage < VOLTAGE_MIN)
             {
                 printf("Je třeba nabít baterii!\n");
@@ -54,9 +54,9 @@ void CheckBattery()
     }
 }
 
-#define LED_PIN 15
-#define NUM_LEDS 8
-CRGB leds[NUM_LEDS];
+// #define LED_PIN 15
+// #define NUM_LEDS 8
+// CRGB leds[NUM_LEDS];
 
 void setup()
 {
@@ -65,10 +65,19 @@ void setup()
     auto &man = rb::Manager::get(); // get manager instance as singleton
     man.install();                  // install manager
 
-    servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
-    servoBus.setAutoStop(0, false); // vypne autostop leveho serva
-    servoBus.setAutoStop(1, false); // vypne autostop praveho serva
+    // servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
+    // servoBus.setAutoStop(0, false); // vypne autostop leveho serva
+    // servoBus.setAutoStop(1, false); // vypne autostop praveho serva
+    // man.leds().yellow(true);
 
+    // comm.WaitForDistanceData();
+
+    // if (comm.distance_px == 1)
+    // {
+    //     man.leds().red(true);
+    // }
+
+    //  cekani na zpravu z Raspberry
     // while (true)
     // {
     //     Serial.printf(" US_Right %i \n", sens.GetUS(sens.RIGHT));
@@ -81,13 +90,36 @@ void setup()
     // CheckBattery();
 
     // WaitForStart();
-    // man.leds().red(true);
-    //  move.Straight(1000, 1000, 1000);
+
+    // move.Straight(1000, 1000, 1000);
     //  move.BackwardUntillWall();
-    //     grab.Close();
-    //     delay(2000);
-    //     grab.Open();
-    //     delay(2000);
-    //     grab.Close();
+    //       grab.Close();
+    //       delay(2000);
+    //       grab.Open();
+    //       delay(2000);
+    //       grab.Close();
 }
-void loop() {}
+
+bool cekamNaData = true;
+
+void loop() {
+    static bool cervenaLed = false;
+
+    if (cekamNaData) {
+        if (Serial.available() > 0) {
+            String data = Serial.readStringUntil('\n');
+            comm.distance_px = std::atoi(data.c_str());
+            cekamNaData = false;
+
+            if (comm.distance_px == 1) {
+                man.leds().red(true);
+                cervenaLed = true;
+            }
+        }
+    }
+
+    // LEDky zůstanou svítit
+    man.leds().yellow(true);
+    if (cervenaLed) man.leds().red(true);
+
+}
