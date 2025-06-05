@@ -12,11 +12,14 @@ struct Communication
     {
       if (Serial.available() > 0)
       {
-        man.leds().red(true);
+        int num;
         String data = Serial.readStringUntil('\n');
         const char *daata = data.c_str();
-        int num = std::atoi(daata);
+        num = std::atoi(daata);
         angle_deg = num;
+        if (num == 1){
+                man.leds().green(true); //rozsviti zelenou diodu
+             }
         break;
       }
     }
@@ -28,10 +31,14 @@ struct Communication
     {
       if (Serial.available() > 0)
       {
+        int num;
         String data = Serial.readStringUntil('\n');
         const char *daata = data.c_str();
-        int num = std::atoi(daata);
+        num = std::atoi(daata);
         distance_px = num;
+        if (num == 1){
+                man.leds().green(true); //rozsviti zelenou diodu
+             }
         break;
       }
       delay(10);

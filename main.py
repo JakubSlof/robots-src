@@ -1,11 +1,11 @@
-import cv2
-import numpy as np
-import math
+# python3 -m venv .venv  
+# source .venv/bin/activate
+
 import serial
 import time
 
 def ComunictionSetup():
-    port = 'COM4' # port pro komunikaci s Raspberry Pi /dev/ttyACM0
+    port = '/dev/cu.usbmodem101' # port pro komunikaci s Raspberry Pi /dev/ttyACM0
     baund_rate = 115200 # rychlost komunikace
     global ser
     ser = serial.Serial(port,baund_rate,timeout=1)

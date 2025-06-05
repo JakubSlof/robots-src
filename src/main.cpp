@@ -65,6 +65,8 @@ void setup()
     auto &man = rb::Manager::get(); // get manager instance as singleton
     man.install();                  // install manager
 
+    comm.WaitForAngleData(); // cekani na zpravu z Raspberry
+
     // servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
     // servoBus.setAutoStop(0, false); // vypne autostop leveho serva
     // servoBus.setAutoStop(1, false); // vypne autostop praveho serva
@@ -100,26 +102,9 @@ void setup()
     //       grab.Close();
 }
 
-bool cekamNaData = true;
+
 
 void loop() {
-    static bool cervenaLed = false;
-
-    if (cekamNaData) {
-        if (Serial.available() > 0) {
-            String data = Serial.readStringUntil('\n');
-            comm.distance_px = std::atoi(data.c_str());
-            cekamNaData = false;
-
-            if (comm.distance_px == 1) {
-                man.leds().red(true);
-                cervenaLed = true;
-            }
-        }
-    }
-
-    // LEDky zůstanou svítit
-    man.leds().yellow(true);
-    if (cervenaLed) man.leds().red(true);
+   
 
 }
