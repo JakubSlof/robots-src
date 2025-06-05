@@ -86,9 +86,9 @@ while True:
             if result:
                 distance_px, angle_deg = result
                 # Odeslání dat na Raspberry Pi
-                SendData(100)
+                SendData(int(distance_px))
                 time.sleep(0.1)  # Krátká prodleva pro stabilitu
-                SendData(angle_deg)
+                SendData(int(angle_deg))
                 print(f"Vzdálenost od spodní hrany: {distance_px} px")
                 print(f"Úhel od středu (osa X): {angle_deg}°")
             else:
