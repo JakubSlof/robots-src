@@ -1,7 +1,10 @@
 #include "SmartServoBus.hpp"
 #include "RBCX.h"
 #include <Arduino.h>
-//#include <thread>
+#include <thread>
+#include <atomic>
+std::atomic<bool> IsEnemy(false);
+
 auto &man = rb::Manager::get(); // pro fungovani RBCX
 #include "Grabber.hpp"
 #include "Comunication.hpp"
@@ -12,6 +15,33 @@ Grabber grab;
 Movement move;
 Communication comm;
 Sensors sens;
+
+void sensorThread()
+{
+    while (true)
+    {
+        int distRight = 0, distLeft = 0;
+        for (int i = 0; i < 3; ++i)
+        {
+            distRight += sens.GetUS(Sensors::RIGHT);
+            distLeft += sens.GetUS(Sensors::LEFT);
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        distRight /= 3;
+        distLeft /= 3;
+
+        if (distRight < 250 || distLeft < 250)
+        {
+            IsEnemy = true;
+        }
+        else
+        {
+            IsEnemy = false;
+        }
+        Serial.printf("US Right AVG: %d, US Left AVG: %d, IsEnemy: %s\n", distRight, distLeft, IsEnemy.load() ? "true" : "false");
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
 
 void WaitForStart()
 {
@@ -64,9 +94,8 @@ void setup()
 
     auto &man = rb::Manager::get(); // get manager instance as singleton
     man.install();                  // install manager
-    WaitForStart(); // cekani na stisk tlacitka ON
-    Serial.println("sendnudes");
-    comm.WaitForDistanceData(); // cekani na zpravu z Raspberry
+    // Serial.println("sendnudes");
+    // comm.WaitForDistanceData(); // cekani na zpravu z Raspberry
 
     // servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
     // servoBus.setAutoStop(0, false); // vypne autostop leveho serva
@@ -90,11 +119,15 @@ void setup()
     // }
 
     // comm.WaitForData(); // cekani na zpravu z Raspberry
-    // CheckBattery();
+    /*START MOVEMENT HERE*/
 
-    // WaitForStart();
+    CheckBattery();
+    WaitForStart();
 
-    // move.Straight(1000, 1000, 1000);
+    std::thread t1(sensorThread);
+    move.Straight(1000, 100000, 100000);
+    t1.join();
+
     //  move.BackwardUntillWall();
     //       grab.Close();
     //       delay(2000);
@@ -103,9 +136,6 @@ void setup()
     //       grab.Close();
 }
 
-
-
-void loop() {
-   
-
+void loop()
+{
 }

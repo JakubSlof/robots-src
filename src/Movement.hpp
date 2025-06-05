@@ -199,20 +199,34 @@ struct Movement
     int time = 0;
     int ticks_M2 = 0;
     int ticks_M3 = 0;
-    distance = distance / mm_to_ticks;
-    Serial.println(distance);
-    while (ticks_M2 < distance && time < timeout)
-    {
-      man.motor(motorL).speed(-speed);
-      man.motor(motorR).speed(speed);
-      man.motor(motorR).requestInfo([&ticks_M3](rb::Motor &info)
-                                    { ticks_M3 = info.position(); });
-      man.motor(motorL).requestInfo([&ticks_M2](rb::Motor &info)
-                                    { ticks_M2 = -info.position(); });
+    int distance_ticks = distance / mm_to_ticks;
+    Serial.println(distance_ticks);
 
-      delay(10);
-      time = time + 10;
+    while (ticks_M2 < distance_ticks && time < timeout)
+    {
+      if (IsEnemy)
+      {
+        // Stop motors
+        man.motor(motorL).speed(0);
+        man.motor(motorR).speed(0);
+        //Serial.println("Enemy detected! Waiting...");
+      }
+      else
+      {
+        man.motor(motorL).speed(-speed);
+        man.motor(motorR).speed(speed);
+        man.motor(motorR).requestInfo([&ticks_M3](rb::Motor &info)
+                                      { ticks_M3 = info.position(); });
+        man.motor(motorL).requestInfo([&ticks_M2](rb::Motor &info)
+                                      { ticks_M2 = -info.position(); });
+
+        delay(10);
+        time = time + 10;
+      }
     }
+    // Stop at the end
+    man.motor(motorL).speed(0);
+    man.motor(motorR).speed(0);
   }
 
   void Stop()
