@@ -69,6 +69,12 @@ void setup()
     servoBus.setAutoStop(0, false); // vypne autostop leveho serva
     servoBus.setAutoStop(1, false); // vypne autostop praveho serva
 
+    sens.InitRGB(); // inicializace RGB senzoru
+
+    while(true){
+        sens.PrintRGBToSerial();
+        delay(1000);
+    }
     // while (true)
     // {
     //     Serial.printf(" US_Right %i \n", sens.GetUS(sens.RIGHT));
