@@ -5,7 +5,7 @@ import serial
 import time
 
 def ComunictionSetup():
-    port = 'COM4' # port pro komunikaci s Raspberry Pi /dev/ttyACM0
+    port = '/dev/cu.usbmodem101' # port pro komunikaci s Raspberry Pi /dev/ttyACM0
     baund_rate = 115200 # rychlost komunikace
     global ser
     ser = serial.Serial(port,baund_rate,timeout=1)
@@ -18,7 +18,7 @@ def SendData(data):
     ser.write(command.encode('utf-8'))
     print('data send')
 
-def waitForResponse():
+def WaitForData():
     while True:
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').strip()
@@ -67,30 +67,34 @@ def get_nearest_red_info(image):
 
 
 # Hlavní část
-
 ComunictionSetup()
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
-cap.set(3, 960)
-cap.set(4, 640)
 
-ret, frame = cap.read()
-cap.release()
+while True:
+    if WaitForData() == "sendnudes":
+        cap = cv2.VideoCapture(0)
+        cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
+        cap.set(3, 960)
+        cap.set(4, 640)
 
-if not ret:
-    print("Nepodařilo se načíst obraz.")
-else:
-    result = get_nearest_red_info(frame)
-    if result:
-        distance_px, angle_deg = result
-        # Odeslání dat na Raspberry Pi
-        SendData(distance_px)
-        print(f"Vzdálenost od spodní hrany: {distance_px} px")
-        print(f"Úhel od středu (osa X): {angle_deg:.2f}°")
-    else:
-        print("Nebyly nalezeny žádné červené objekty.")
+        ret, frame = cap.read()
+        cap.release()
 
-    # Volitelně zobrazit obraz
-    cv2.imshow("Frame", frame)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        if not ret:
+            print("Nepodařilo se načíst obraz.")
+        else:
+            result = get_nearest_red_info(frame)
+            if result:
+                distance_px, angle_deg = result
+                # Odeslání dat na Raspberry Pi
+                SendData(100)
+                time.sleep(0.1)  # Krátká prodleva pro stabilitu
+                SendData(angle_deg)
+                print(f"Vzdálenost od spodní hrany: {distance_px} px")
+                print(f"Úhel od středu (osa X): {angle_deg}°")
+            else:
+                print("Nebyly nalezeny žádné červené objekty.")
+    time.sleep(0.1)  # Krátká prodleva pro stabilitu
+
+
+
+

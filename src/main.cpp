@@ -64,8 +64,9 @@ void setup()
 
     auto &man = rb::Manager::get(); // get manager instance as singleton
     man.install();                  // install manager
-
-    comm.WaitForAngleData(); // cekani na zpravu z Raspberry
+    WaitForStart(); // cekani na stisk tlacitka ON
+    Serial.println("sendnudes");
+    comm.WaitForDistanceData(); // cekani na zpravu z Raspberry
 
     // servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
     // servoBus.setAutoStop(0, false); // vypne autostop leveho serva

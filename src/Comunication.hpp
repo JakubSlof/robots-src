@@ -36,7 +36,7 @@ struct Communication
         const char *daata = data.c_str();
         num = std::atoi(daata);
         distance_px = num;
-        if (num == 1){
+        if (num == 100){
                 man.leds().green(true); //rozsviti zelenou diodu
              }
         break;
