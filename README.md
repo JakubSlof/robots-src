@@ -11,4 +11,4 @@
 7. a počkat než se znova rozsvítí
 8. Na RBCX tlačítkem ON se Začne program
 
-![Snímek obrazovky 2025-06-05 v 20.55.28.png](foto/Rpi_pinout.png)
+![Snímek obrazovky 2025-06-05 v 20.55.28.png](web/Rpi_pinout.png)
