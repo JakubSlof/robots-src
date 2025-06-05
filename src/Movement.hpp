@@ -6,7 +6,7 @@ struct Movement
 {
   rb::MotorId motorL = rb::MotorId::M1; // levý motor
   rb::MotorId motorR = rb::MotorId::M4; // pravý motor
-  double mm_to_ticks = 0.215;           // konstanta pro prepocet tics enkoderu na mm
+  double mm_to_ticks = 0.108;           // konstanta pro prepocet tics enkoderu na mm
   int wheel_base = 165;                 // vzdalenost mezi koly robota v mm
   int last_ticks_M3 = 0;                // pravy motor
   int last_ticks_M2 = 0;                // levy motor
@@ -84,12 +84,13 @@ struct Movement
     int error = 0;
     while ((ticks_M2 < distance_ticks) && (ticks_M3 < distance_ticks))
     {
+      printf("vzpocet2: %d, M3: %d\n", -(acc_const * ticks_M2 + speed_from - error), ticks_M3);
       error = 10 * (ticks_M2 - ticks_M3);
       man.motor(motorL).speed(-(acc_const * ticks_M2 + speed_from - error));
       man.motor(motorR).speed(acc_const * ticks_M3 + speed_from + error);
       man.motor(motorR).requestInfo([&ticks_M3](rb::Motor &info)
                                     {
-            //printf("M3: position:%d\n", info.position());
+            printf("M3: position:%d\n", info.position());
             ticks_M3 = info.position(); });
       man.motor(motorL).requestInfo([&ticks_M2](rb::Motor &info)
                                     {

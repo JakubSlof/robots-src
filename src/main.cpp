@@ -65,6 +65,10 @@ void setup()
     auto &man = rb::Manager::get(); // get manager instance as singleton
     man.install();                  // install manager
 
+    WaitForStart();
+    move.Straight(32000, 1000, 10000); // test pohybu robota
+    move.Stop();
+
     // servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
     // servoBus.setAutoStop(0, false); // vypne autostop leveho serva
     // servoBus.setAutoStop(1, false); // vypne autostop praveho serva
