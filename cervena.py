@@ -5,7 +5,7 @@ import serial
 import time
 
 def ComunictionSetup():
-    port = '/dev/ttyACM0' # port pro komunikaci s Raspberry Pi
+    port = 'COM4' # port pro komunikaci s Raspberry Pi /dev/ttyACM0
     baund_rate = 115200 # rychlost komunikace
     global ser
     ser = serial.Serial(port,baund_rate,timeout=1)
@@ -67,6 +67,8 @@ def get_nearest_red_info(image):
 
 
 # Hlavní část
+
+ComunictionSetup()
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
 cap.set(3, 960)
@@ -81,6 +83,8 @@ else:
     result = get_nearest_red_info(frame)
     if result:
         distance_px, angle_deg = result
+        # Odeslání dat na Raspberry Pi
+        SendData(distance_px)
         print(f"Vzdálenost od spodní hrany: {distance_px} px")
         print(f"Úhel od středu (osa X): {angle_deg:.2f}°")
     else:
