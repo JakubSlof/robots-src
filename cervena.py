@@ -68,17 +68,16 @@ def get_nearest_red_info(image):
 
 # Hlavní část
 ComunictionSetup()
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
+cap.set(3, 960)
+cap.set(4, 640)
 
 while True:
     if WaitForData() == "sendnudes":
-        cap = cv2.VideoCapture(0)
-        cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
-        cap.set(3, 960)
-        cap.set(4, 640)
-
+        for i in range(5):
+            h, j = cap.read()
         ret, frame = cap.read()
-        cap.release()
-
         if not ret:
             print("Nepodařilo se načíst obraz.")
         else:

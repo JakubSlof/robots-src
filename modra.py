@@ -18,7 +18,7 @@ def SendData(data):
     ser.write(command.encode('utf-8'))
     print('data send')
 
-def waitForResponse():
+def waitForData():
     while True:
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').strip()
@@ -68,21 +68,22 @@ cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
 cap.set(3, 960)
 cap.set(4, 640)
 
-ret, frame = cap.read()
-cap.release()
-
-if not ret:
-    print("Nepodařilo se načíst obraz.")
-else:
-    result = get_nearest_blue_info(frame)
-    if result:
-        distance_px, angle_deg = result
-        print(f"Vzdálenost od spodní hrany: {distance_px} px")
-        print(f"Úhel od středu (osa X): {angle_deg}°")
-    else:
-        print("Nebyly nalezeny žádné modré objekty.")
-
-    # Volitelně zobrazit obraz
-    cv2.imshow("Snímek", frame)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+while True:
+    if waitForData() == "sendnudes":
+        for i in range(5):
+            h,j = cap.read()
+        ret, frame = cap.read()
+        if not ret:
+            print("Nepodařilo se načíst obraz.")
+        else:
+            result = get_nearest_blue_info(frame)
+            if result:
+                distance_px, angle_deg = result
+                SendData(int(distance_px))
+                time.sleep(0.1)  # Krátká prodleva pro stabilitu
+                SendData(int(angle_deg))
+                print(f"Vzdálenost od spodní hrany: {distance_px} px")
+                print(f"Úhel od středu (osa X): {angle_deg}°")
+            else:
+                print("Nebyly nalezeny žádné modré objekty.")
+    time.sleep(0.1)  # Krátká prodleva pro stabilitu
