@@ -16,6 +16,20 @@ Movement move;
 Communication comm;
 Sensors sens;
 
+enum Color
+{
+    RED,
+    BLUE,
+    NONE
+};
+
+Color color = NONE;
+
+uint16_t pixel_to_mm(uint16_t px)
+{
+    return px * 10; //%edit
+}
+
 void sensorThread()
 {
     while (true)
@@ -38,7 +52,7 @@ void sensorThread()
         {
             IsEnemy = false;
         }
-        Serial.printf("US Right AVG: %d, US Left AVG: %d, IsEnemy: %s\n", distRight, distLeft, IsEnemy.load() ? "true" : "false");
+        // Serial.printf("US Right AVG: %d, US Left AVG: %d, IsEnemy: %s\n", distRight, distLeft, IsEnemy.load() ? "true" : "false");
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
@@ -58,8 +72,8 @@ void WaitForStart()
 void CheckBattery()
 {
     const auto &bat = man.battery();
-    static const uint32_t VOLTAGE_MAX = 7500; //%edit
-    static const uint32_t VOLTAGE_MIN = 6600; //%edit
+    static const uint32_t VOLTAGE_MAX = 8000; //%edit
+    static const uint32_t VOLTAGE_MIN = 6000; //%edit
     int i = 0;
     int voltage = 0;
     for (i = 0; i < 2; ++i)
@@ -84,56 +98,66 @@ void CheckBattery()
     }
 }
 
-// #define LED_PIN 15
-// #define NUM_LEDS 8
-// CRGB leds[NUM_LEDS];
-
 void setup()
 {
     Serial.begin(115200);
 
     auto &man = rb::Manager::get(); // get manager instance as singleton
     man.install();                  // install manager
-    // Serial.println("sendnudes");
-    // comm.WaitForDistanceData(); // cekani na zpravu z Raspberry
 
-    // servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
-    // servoBus.setAutoStop(0, false); // vypne autostop leveho serva
-    // servoBus.setAutoStop(1, false); // vypne autostop praveho serva
-    // man.leds().yellow(true);
+    servoBus.begin(2, UART_NUM_1, GPIO_NUM_27);
+    servoBus.setAutoStop(0, false); // vypne autostop leveho serva
+    servoBus.setAutoStop(1, false); // vypne autostop praveho serva
 
-    // comm.WaitForDistanceData();
-
-    // if (comm.distance_px == 1)
-    // {
-    //     man.leds().red(true);
-    // }
-
-    //  cekani na zpravu z Raspberry
-    // while (true)
-    // {
-    //     Serial.printf(" US_Right %i \n", sens.GetUS(sens.RIGHT));
-    //     Serial.printf(" US_Left %i \n", sens.GetUS(sens.LEFT));
-    //     Serial.printf(" US_Back %i \n", sens.GetUS(sens.BACK));
-    //     delay(1000);
-    // }
-
-    // comm.WaitForData(); // cekani na zpravu z Raspberry
     /*START MOVEMENT HERE*/
-
     CheckBattery();
+    color = RED;
+    while (true)
+    {
+        // Nastav LED podle barvy
+        if (color == RED)
+        {
+            man.leds().red(true);
+            man.leds().blue(false);
+        }
+        else if (color == BLUE)
+        {
+            man.leds().blue(true);
+            man.leds().red(false);
+        }
+
+        if (man.buttons().up())
+        {
+            color = (color == RED) ? BLUE : RED;
+            delay(300);
+        }
+
+        if (man.buttons().on())
+        {
+            break;
+        }
+        delay(50);
+    }
     WaitForStart();
+    const char *colorStr = (color == RED) ? "RED" : (color == BLUE) ? "BLUE"
+                                                                    : "NONE";
+    Serial.printf("Color: %s\n", colorStr);
+    Serial.println("sendnudes");
+    comm.WaitForDistanceData();
+    comm.WaitForAngleData();
 
-    std::thread t1(sensorThread);
-    move.Straight(1000, 100000, 100000);
-    t1.join();
+    grab.Open();
+    move.TurnRight(comm.angle_deg - 90);
+    move.Straight(1000, pixel_to_mm(comm.distance_px), 10000);
+    grab.Close();
+    delay(1000);
+    move.BackwardUntillWall();
+    grab.Open();
+    delay(1000);
 
-    //  move.BackwardUntillWall();
-    //       grab.Close();
-    //       delay(2000);
-    //       grab.Open();
-    //       delay(2000);
-    //       grab.Close();
+    // std::thread t1(sensorThread);
+
+    // t1.join();
 }
 
 void loop()

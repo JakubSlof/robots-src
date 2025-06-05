@@ -200,7 +200,6 @@ struct Movement
     int ticks_M2 = 0;
     int ticks_M3 = 0;
     int distance_ticks = distance / mm_to_ticks;
-    Serial.println(distance_ticks);
 
     while (ticks_M2 < distance_ticks && time < timeout)
     {
@@ -209,7 +208,7 @@ struct Movement
         // Stop motors
         man.motor(motorL).speed(0);
         man.motor(motorR).speed(0);
-        //Serial.println("Enemy detected! Waiting...");
+        // Serial.println("Enemy detected! Waiting...");
       }
       else
       {
