@@ -40,7 +40,7 @@ def get_nearest_blue_info(image):
     blue_centers = []
     for cnt in contours_blue:
         area = cv2.contourArea(cnt)
-        if area > 500:
+        if area > 400:
             x, y, w, h = cv2.boundingRect(cnt)
             cx = x + w // 2
             cy = y + h // 2

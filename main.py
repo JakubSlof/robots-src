@@ -2,6 +2,42 @@ import cv2
 import numpy as np
 import math
 
+
+def get_nearest_blue_info(image):
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    # Definice modré barvy v HSV
+    lower_blue = np.array([90, 50, 50])
+    upper_blue = np.array([140, 255, 255])
+
+    # Maska pro modrou
+    mask_blue = cv2.inRange(hsv, lower_blue, upper_blue)
+
+    # Najdi kontury modrých objektů
+    contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    blue_centers = []
+    for cnt in contours_blue:
+        area = cv2.contourArea(cnt)
+        if area > 400:
+            x, y, w, h = cv2.boundingRect(cnt)
+            cx = x + w // 2
+            cy = y + h // 2
+            blue_centers.append((x, y, w, h, cx, cy))
+
+    if not blue_centers:
+        return None  # žádný modrý objekt nenalezen
+
+    # Najdi objekt nejblíže spodnímu okraji
+    closest = max(blue_centers, key=lambda c: c[1])
+    image_height = image.shape[0]
+    image_width = image.shape[1]
+
+    distance_from_bottom = image_height - closest[1]  # px ve svislém směru (čím nižší, tím menší)
+    offset_x = closest[0] - (image_width // 2)        # px vlevo/zprava od středu (může být záporný)
+
+    return (x, y, w, h),distance_from_bottom, offset_x
+
+
 def get_nearest_red_info(image):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
@@ -72,7 +108,7 @@ while True:
         print("Chyba při čtení z kamery.")
         break
 
-    result = get_nearest_red_info(frame)
+    result = get_nearest_blue_info(frame)
     if result:
         (x, y, w, h), distance_px, offset_x = result
 
