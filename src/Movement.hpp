@@ -106,7 +106,7 @@ struct Movement
     man.motor(motorR).setCurrentPosition(0);
     int ticks_M2 = 0;
     int ticks_M3 = 0;
-    int distance = ((PI * wheel_base) / 360) * angle / mm_to_ticks;
+    int distance = ((PI * wheel_base) / 360) * angle / mm_to_ticks * 2;
     while (distance > ticks_M3)
     {
       man.motor(motorL).speed(500);
@@ -132,7 +132,7 @@ struct Movement
     man.motor(motorR).setCurrentPosition(0);
     int ticks_M2 = 0;
     int ticks_M3 = 0;
-    int distance = ((PI * wheel_base) / 360) * angle / mm_to_ticks;
+    int distance = ((PI * wheel_base) / 360) * angle / mm_to_ticks * 2;
     while (distance > ticks_M3)
     {
       man.motor(motorL).speed(-500);

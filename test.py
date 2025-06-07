@@ -175,9 +175,9 @@ if state_field == "red":
                 # Přepočet do cm
                         cm_y = px_to_cm_y(distance_px)
                         cm_x = px_to_cm_x_offset(offset_x, cm_y, frame_width=960)
-                        SendData(int(distance_px))
+                        SendData(int(cm_y))
                         time.sleep(0.1)  # Krátká prodleva pro stabilitu
-                        SendData(int(offset_x))
+                        SendData(int(cm_x))
                         print(f"Odsazení X: {offset_x}px → {cm_x:.1f} cm, Spodní vzdálenost: {distance_px}px → {cm_y:.1f} cm")
 else:
     GPIO.output(GREEN_PIN, GPIO.HIGH)
@@ -191,8 +191,8 @@ else:
                 (x, y, w, h), distance_px, offset_x = result
                 cm_y = px_to_cm_y(distance_px)
                 cm_x = px_to_cm_x_offset(offset_x, cm_y, frame_width=960)
-                SendData(int(distance_px))
+                SendData(int(cm_y))
                 time.sleep(0.1)  # Krátká prodleva pro stabilitu
-                SendData(int(offset_x))
+                SendData(int(cm_x))
                 print(f"Odsazení X: {offset_x}px → {cm_x:.1f} cm, Spodní vzdálenost: {distance_px}px → {cm_y:.1f} cm")
 

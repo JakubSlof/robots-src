@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <thread>
 #include <atomic>
+#include <cmath>
 std::atomic<bool> IsEnemy(false);
 
 auto &man = rb::Manager::get(); // pro fungovani RBCX
@@ -27,7 +28,7 @@ Color color = NONE;
 
 uint16_t pixel_to_mm(uint16_t px)
 {
-    return px * 10; //%edit
+    return px * 10;
 }
 
 void sensorThread()
@@ -72,7 +73,7 @@ void WaitForStart()
 void CheckBattery()
 {
     const auto &bat = man.battery();
-    static const uint32_t VOLTAGE_MAX = 8000; //%edit
+    static const uint32_t VOLTAGE_MAX = 8400; //%edit
     static const uint32_t VOLTAGE_MIN = 6000; //%edit
     int i = 0;
     int voltage = 0;
@@ -138,26 +139,43 @@ void setup()
         }
         delay(50);
     }
+    // const char *colorStr = (color == RED) ? "RED" : (color == BLUE) ? "BLUE"
+    //                                                                 : "NONE";
     WaitForStart();
-    const char *colorStr = (color == RED) ? "RED" : (color == BLUE) ? "BLUE"
-                                                                    : "NONE";
-    Serial.printf("Color: %s\n", colorStr);
-    Serial.println("sendnudes");
-    comm.WaitForDistanceData();
-    comm.WaitForAngleData();
+
+    // std::thread t1(sensorThread);
+    // t1.join();
 
     grab.Open();
-    move.TurnRight(comm.angle_deg - 90);
+    delay(1000);
+    Serial.println("sendnudes");
+    comm.WaitForOffSetData();
+    delay(1);
+    comm.WaitForDistanceData();
+
+    double angle_rad = std::atan2(comm.angle_deg, comm.distance_px);
+    double angle = angle_rad * 180.0 / M_PI;
+    // while (true)
+    // {
+    //     Serial.printf("Angle: %.2f, comm.angle_deg: %d, Distance: %d\n", angle, comm.angle_deg, comm.distance_px);
+    // }
+
+    if (comm.angle_deg > 0)
+    {
+        move.TurnLeft(-angle);
+    }
+    else
+    {
+        move.TurnRight(angle);
+    }
+
     move.Straight(1000, pixel_to_mm(comm.distance_px), 10000);
+    delay(1000);
     grab.Close();
     delay(1000);
     move.BackwardUntillWall();
     grab.Open();
     delay(1000);
-
-    // std::thread t1(sensorThread);
-
-    // t1.join();
 }
 
 void loop()

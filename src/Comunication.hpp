@@ -6,7 +6,7 @@ struct Communication
   int angle_deg;
   int distance_px;
 
-  void WaitForAngleData()
+  void WaitForOffSetData()
   {
     while (true)
     {
@@ -17,9 +17,7 @@ struct Communication
         const char *daata = data.c_str();
         num = std::atoi(daata);
         angle_deg = num;
-        if (num == 1){
-                man.leds().green(true); //rozsviti zelenou diodu
-             }
+        man.leds().yellow(true); // rozsviti zelenou diodu
         break;
       }
     }
@@ -36,9 +34,9 @@ struct Communication
         const char *daata = data.c_str();
         num = std::atoi(daata);
         distance_px = num;
-        if (num == 100){
-                man.leds().green(true); //rozsviti zelenou diodu
-             }
+
+        man.leds().green(true); // rozsviti zelenou diodu
+
         break;
       }
       delay(10);
