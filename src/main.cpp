@@ -141,41 +141,67 @@ void setup()
     }
     // const char *colorStr = (color == RED) ? "RED" : (color == BLUE) ? "BLUE"
     //                                                                 : "NONE";
+
+    const int N = 5;
+    int distArr[N];
+    int angleArr[N];
+
     WaitForStart();
 
-    // std::thread t1(sensorThread);
-    // t1.join();
+    std::thread t1(sensorThread);
 
     grab.Open();
     delay(1000);
-    Serial.println("sendnudes");
-    comm.WaitForOffSetData();
-    delay(1);
-    comm.WaitForDistanceData();
+
+    for (int i = 0; i < N; ++i)
+    {
+        Serial.println("sendnudes");
+        comm.WaitForDistanceData();
+        delay(1);
+        comm.WaitForOffSetData();
+        distArr[i] = comm.distance_px;
+        angleArr[i] = comm.angle_deg;
+        delay(10);
+    }
+
+    // Seřadit pole
+    std::sort(distArr, distArr + N);
+    std::sort(angleArr, angleArr + N);
+
+    // Průměr prostředních 3 hodnot
+    int distSum = distArr[1] + distArr[2] + distArr[3];
+    int angleSum = angleArr[1] + angleArr[2] + angleArr[3];
+
+    comm.distance_px = distSum / 3;
+    comm.angle_deg = angleSum / 3;
+
+    // while (true)
+    // {
+    //     Serial.printf("AVG Angle: %d, AVG Distance: %d\n", comm.angle_deg, comm.distance_px);
+    // }
 
     double angle_rad = std::atan2(comm.angle_deg, comm.distance_px);
     double angle = angle_rad * 180.0 / M_PI;
-    // while (true)
-    // {
-    //     Serial.printf("Angle: %.2f, comm.angle_deg: %d, Distance: %d\n", angle, comm.angle_deg, comm.distance_px);
-    // }
 
-    if (comm.angle_deg > 0)
+    if (comm.angle_deg < 0)
     {
-        move.TurnLeft(-angle);
+        move.TurnLeft(angle);
     }
     else
     {
         move.TurnRight(angle);
     }
 
-    move.Straight(1000, pixel_to_mm(comm.distance_px), 10000);
-    delay(1000);
+    move.Straight(5000, pixel_to_mm(comm.distance_px) + 60, 10000);
+    delay(100);
     grab.Close();
-    delay(1000);
+    delay(100);
     move.BackwardUntillWall();
+    delay(100);
+    move.Straight(2000, 150, 10000);
     grab.Open();
-    delay(1000);
+    move.TurnRight(90);
+    t1.join();
 }
 
 void loop()
